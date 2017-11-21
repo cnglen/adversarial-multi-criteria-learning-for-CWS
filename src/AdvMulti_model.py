@@ -178,7 +178,7 @@ class MultiModel(object):
             global_step = tf.Variable(0, name="global_step", trainable=False)
             tvars = tf.trainable_variables()
             grads, _ = tf.clip_by_global_norm(tf.gradients(loss, tvars), self.clip)
-            train_op = optimizer.apply_gradients(zip(grads, tvars),
+            train_op = optimizer.apply_gradients(list(zip(grads, tvars)),
                                                       global_step = global_step)
 
             return train_op, global_step
@@ -188,7 +188,7 @@ class MultiModel(object):
             global_step = tf.Variable(0, name="global_step", trainable=False)
             tvars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=taskid)
             grads, _ = tf.clip_by_global_norm(tf.gradients(loss, tvars), self.clip)
-            train_op = optimizer.apply_gradients(zip(grads, tvars),
+            train_op = optimizer.apply_gradients(list(zip(grads, tvars)),
                                                  global_step=global_step)
 
             return train_op, global_step
@@ -198,7 +198,7 @@ class MultiModel(object):
             global_step = tf.Variable(0, name="global_step", trainable=False)
             tvars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='domain')
             grads, _ = tf.clip_by_global_norm(tf.gradients(loss, tvars), self.clip)
-            train_op = optimizer.apply_gradients(zip(grads, tvars),
+            train_op = optimizer.apply_gradients(list(zip(grads, tvars)),
                                                  global_step=global_step)
 
             return train_op, global_step
@@ -208,7 +208,7 @@ class MultiModel(object):
             global_step = tf.Variable(0, name="global_step", trainable=False)
             tvars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='shared') + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=taskid) + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='embedding')
             grads, _ = tf.clip_by_global_norm(tf.gradients(loss, tvars), self.clip)
-            train_op = optimizer.apply_gradients(zip(grads, tvars),
+            train_op = optimizer.apply_gradients(list(zip(grads, tvars)),
                                       global_step=global_step)
 
             return train_op, global_step
@@ -363,7 +363,7 @@ class MultiModel(object):
     # predict one by one for tasks
     def predict(self, sess, N, one_iterator, scores, transition_param):
         y_pred, y_true = [], []
-        for i in xrange(N):
+        for i in range(N):
             x_one, y_one, len_one = one_iterator.next_pred_one()
 
             feed_dict = {

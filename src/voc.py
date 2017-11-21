@@ -21,12 +21,12 @@ class Vocab(object):
             text = f.readlines()
             if single is False:
                 for line in text:
-                    com = unicode(line, 'utf-8').strip()
+                    com = str(line, 'utf-8').strip()
                     self.table.append(com)
             else:
                 table = []
                 for line in text:
-                    com = unicode(line, 'utf-8').strip().split(' ')
+                    com = str(line, 'utf-8').strip().split(' ')
                     if len(com[1]) == 2 and int(com[2]) > self.frequency :
                         table.append(com[1])
                 self.table = set(table)
@@ -37,14 +37,14 @@ class Vocab(object):
     def load_data(self):
         with open(self.path, 'r') as f:
             line = f.readline().strip().split(" ")
-            N, dim = map(int, line)
+            N, dim = list(map(int, line))
 
             self.word_vectors = []
             idx = 0
             for k in range(N):
-                line = unicode(f.readline(), 'utf-8').strip().split(" ")
+                line = str(f.readline(), 'utf-8').strip().split(" ")
                 self.word2idx[line[0]] = idx
-                vector = np.asarray(map(float, line[1:]), dtype=np.float32)
+                vector = np.asarray(list(map(float, line[1:])), dtype=np.float32)
                 self.word_vectors.append(vector)
                 idx += 1
 
@@ -62,10 +62,10 @@ class Vocab(object):
                 self.word_vectors.append(word_vec)
                 idx += 1
 
-            print 'Vocab size:', len(self.word_vectors)
-            print 'word2idx:', len(self.word2idx)
-            print 'index:', idx
-            print 'count:', count
+            print('Vocab size:', len(self.word_vectors))
+            print('word2idx:', len(self.word2idx))
+            print('index:', idx)
+            print('count:', count)
 
             self.word_vectors = np.asarray(self.word_vectors, dtype=np.float32)
 
@@ -123,7 +123,7 @@ class OOV(object):
         f.close()
 
         for line in li:
-            line = unicode(line, 'utf-8')
+            line = str(line, 'utf-8')
             line_t = line.replace('\n', '').replace('\r', '').replace('  ', '#').split('#')
             if (len(line_t) < 3):
                 if (len(src_data_sentence) == 0):
@@ -173,11 +173,11 @@ class OOV(object):
             ans = []
             for word in ans_sentence:
                 ans.append(word)
-                for i in xrange(len(word) - 1): ans.append(-1)
+                for i in range(len(word) - 1): ans.append(-1)
             pred = []
             for word in pred_sentence:
                 pred.append(word)
-                for i in xrange(len(word) - 1): pred.append(-1)
+                for i in range(len(word) - 1): pred.append(-1)
             for ans_word, pred_word in zip(ans, pred):
                 if ans_word == -1: continue
                 if self.dict.get(ans_word) == None:
@@ -187,7 +187,7 @@ class OOV(object):
                     if ans_word.find(pred_word) == -1: continue
                     right += 1
         oov_recall_rate = right * 1.0 / total
-        print ('total=', total, 'right=', right, 'oov_recall_rate=',oov_recall_rate)
+        print(('total=', total, 'right=', right, 'oov_recall_rate=',oov_recall_rate))
         return oov_recall_rate
 
 

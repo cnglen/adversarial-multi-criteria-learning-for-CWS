@@ -54,8 +54,8 @@ if FLAGS.embed_status is False:
     init_embedding = None
 
 print("\nParameters:")
-for attr, value in sorted(FLAGS.__flags.items(),reverse=True):
-    print("{}={} \n".format(attr.upper(), value))
+for attr, value in sorted(list(FLAGS.__flags.items()),reverse=True):
+    print(("{}={} \n".format(attr.upper(), value)))
 print("")
 #define log file
 logger = logging.getLogger('record')
@@ -75,12 +75,12 @@ elif MODEL_TYPE == 'Model3':
     reuse_status = True
     sep_status = False
 else:
-    print 'choose the correct multi_model, the listed choices are Model1, Model2, Model3'
+    print('choose the correct multi_model, the listed choices are Model1, Model2, Model3')
     logger.warn('Wrong Model Choosen {}'.format(MODEL_TYPE))
     sys.exit()
 
 stats = [FLAGS.embed_status, FLAGS.gate_status, ADV_STATUS]
-posfix = map(lambda x: 'Y' if x else 'N', stats)
+posfix = ['Y' if x else 'N' for x in stats]
 posfix.append(MODEL_TYPE)
 if ADV_STATUS:
     posfix.append(str(FLAGS.adv_weight))
@@ -92,7 +92,7 @@ test_data_iterator = []
 dev_df = []
 test_df = []
 print("Loading data...")
-for i in xrange(FLAGS.num_corpus):
+for i in range(FLAGS.num_corpus):
     train_data_iterator.append(data_helpers.BucketedDataIterator(pd.read_csv(TRAIN_FILE[i])))
     dev_df.append(pd.read_csv(DEV_FILE[i]))
     dev_data_iterator.append(data_helpers.BucketedDataIterator(dev_df[i]))
@@ -137,13 +137,13 @@ with tf.Graph().as_default():
         except:
             pass
         out_dir = os.path.abspath(os.path.join(os.path.curdir, "models", model_name))
-        print("Writing to {}\n".format(out_dir))
+        print(("Writing to {}\n".format(out_dir)))
 
         # Checkpoint directory. Tensorflow assumes this directory already exists so we need to create it
         # modeli_embed_adv_gate_diff_dropout
         checkpoint_dir = os.path.abspath(os.path.join(out_dir, "checkpoints"))
         checkpoint_all = []
-        for i in xrange(1, FLAGS.num_corpus+1):
+        for i in range(1, FLAGS.num_corpus+1):
             filename = 'task' + str(i) + '_' + '_'.join(posfix)
             checkpoint_all.append(os.path.join(checkpoint_dir, filename))
         if not os.path.exists(checkpoint_dir):
@@ -161,7 +161,7 @@ with tf.Graph().as_default():
         privateTask = []
         testTask = []
         taskID = []
-        for i in xrange(FLAGS.num_corpus):
+        for i in range(FLAGS.num_corpus):
             basictask.append([model.task_basic_op[i],model.global_basic_step[i],model.losses[i]])
             if model.adv:
                 task.append([model.task_op[i], model.global_step[i], model.loss_com[i]])
@@ -174,7 +174,7 @@ with tf.Graph().as_default():
                 x_batch, y_batch, seq_len_batch, DROP_OUT[id-1], basictask[id-1][0], basictask[id-1][1], basictask[id-1][2])
 
             time_str = datetime.datetime.now().isoformat()
-            print("Task_{}: {}: step {}, loss {:g}".format(id, time_str, step, loss))
+            print(("Task_{}: {}: step {}, loss {:g}".format(id, time_str, step, loss)))
 
             return step
 
@@ -184,7 +184,7 @@ with tf.Graph().as_default():
                    x_batch, y_batch, seq_len_batch, y_class_batch, DROP_OUT[id-1], task[id-1][0], task[id-1][1], task[id-1][2], model.domain_op, model.global_step_domain, model.D_loss, model.H_loss)
 
             time_str = datetime.datetime.now().isoformat()
-            print("Task_{}: {}: step {}, loss_cws {:g}, loss_adv {:g}, loss_hess {:g}".format(id, time_str, step, loss_cws, loss_adv, loss_hess))
+            print(("Task_{}: {}: step {}, loss_cws {:g}, loss_adv {:g}, loss_hess {:g}".format(id, time_str, step, loss_cws, loss_adv, loss_hess)))
 
             return step
 
@@ -193,7 +193,7 @@ with tf.Graph().as_default():
                 x_batch, y_batch, seq_len_batch, DROP_OUT[id-1], privateTask[id-1][0], privateTask[id-1][1], privateTask[id-1][2])
 
             time_str = datetime.datetime.now().isoformat()
-            print("Task_{}: {}: step {}, loss {:g}".format(id, time_str, step, loss))
+            print(("Task_{}: {}: step {}, loss {:g}".format(id, time_str, step, loss)))
 
             return step
 
@@ -202,10 +202,10 @@ with tf.Graph().as_default():
             yp_wordnum = y_pred.count(2)+y_pred.count(3)
             yt_wordnum = y.count(2)+y.count(3)
             start = 0
-            for i in xrange(len(y)):
+            for i in range(len(y)):
                 if y[i] == 2 or y[i] == 3:
                     flag = True
-                    for j in xrange(start, i+1):
+                    for j in range(start, i+1):
                         if y[j] != y_pred[j]:
                             flag = False
                     if flag:
@@ -215,9 +215,9 @@ with tf.Graph().as_default():
             P = cor_num / float(yp_wordnum)
             R = cor_num / float(yt_wordnum)
             F = 2 * P * R / (P + R)
-            print 'P: ', P
-            print 'R: ', R
-            print 'F: ', F
+            print('P: ', P)
+            print('R: ', R)
+            print('F: ', F)
             if test:
                 return P, R, F
             else:
@@ -227,9 +227,9 @@ with tf.Graph().as_default():
             N = df.shape[0]
             y_true, y_pred = model.fast_all_predict(sess, N, iterator, testTask[idx-1][0],testTask[idx-1][1])
             if test:
-                print "test:"
+                print("test:")
             else:
-                print "dev:"
+                print("dev:")
             return y_pred, y_true
 
         # train loop
@@ -269,7 +269,7 @@ with tf.Graph().as_default():
                             best_step_all[j - 1] = current_step
                             if FLAGS.real_status:
                                 path = saver.save(sess, checkpoint_all[j-1])
-                                print("Saved model checkpoint to {}\n".format(path))
+                                print(("Saved model checkpoint to {}\n".format(path)))
                             else:
                                 print("This is only for trial and error\n")
                             yp_test, yt_test = final_test_step(taskID[j-1][3], taskID[j-1][4], j, test=True)
@@ -278,7 +278,7 @@ with tf.Graph().as_default():
                             best_rval[j - 1] = rval
                             best_fval[j - 1] = fval
             logger.info('-----------Public train ends-------------')
-            for i in xrange(FLAGS.num_corpus):
+            for i in range(FLAGS.num_corpus):
                 logger.info('Task{} best step is {} and p:{:.2f} r:{:.2f} f:{:.2f}'.format(i + 1, best_step_all[i],best_pval[i]*100, best_rval[i]*100,best_fval[i]*100))
 
             for i in range(FLAGS.num_epochs_private):
@@ -301,25 +301,25 @@ with tf.Graph().as_default():
                                     best_step_private[j - 1] = current_step
                                     if FLAGS.real_status:
                                         path = saver.save(sess, checkpoint_all[j - 1])
-                                        print("Saved model checkpoint to {}\n".format(path))
+                                        print(("Saved model checkpoint to {}\n".format(path)))
                                     else:
                                         print("This is only for trial and error\n")
                                     yp_test, yt_test = final_test_step(taskID[j-1][3], taskID[j-1][4], j, test=True)
                                     best_pval[j - 1], best_rval[j-1], best_fval[j-1] = evaluate_word_PRF(yp_test, yt_test, test=True)
                                 elif current_step - best_step_private[j - 1] > 2000:
-                                    print("Task_{} didn't get better results in more than 2000 steps".format(j))
+                                    print(("Task_{} didn't get better results in more than 2000 steps".format(j)))
                                     flag[j - 1] = True
                 else:
-                    print 'Early stop triggered, all the tasks have been finished. Dropout:', DROP_OUT
+                    print('Early stop triggered, all the tasks have been finished. Dropout:', DROP_OUT)
                     break
 
 
         if FLAGS.real_status:
             logger.info('-------------Show the results------------')
-            for i in xrange(FLAGS.num_corpus):
+            for i in range(FLAGS.num_corpus):
                 filename = 'Model' + str(i+1) + '_' + '_'.join(posfix)
                 saver.restore(sess, checkpoint_all[i])
-                print 'Task:{}\n'.format(i+1)
+                print('Task:{}\n'.format(i+1))
                 logger.info('Task:{}, filename:{}'.format(i+1, filename))
                 yp, yt = final_test_step(taskID[i][3], taskID[i][4], i+1, test=True)
                 evaluate_word_PRF(yp, yt)

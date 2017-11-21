@@ -147,7 +147,7 @@ class Model(object):
 
             tvars = tf.trainable_variables()
             grads, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tvars), self.clip)
-            self.train_op = self.optimizer.apply_gradients(zip(grads, tvars),
+            self.train_op = self.optimizer.apply_gradients(list(zip(grads, tvars)),
                                                            global_step=self.global_step)
 
     def train_step(self, sess, x_batch, y_batch, seq_len_batch, dropout_keep_prob):
@@ -202,7 +202,7 @@ class Model(object):
 
     def predict(self, sess, N, one_iterator):
         y_pred, y_true = [], []
-        for i in xrange(N):
+        for i in range(N):
             x_one, y_one, len_one = one_iterator.next_pred_one()
 
             feed_dict = {
@@ -229,16 +229,16 @@ class Model(object):
 def test():
     init_embedding = Vocab(WORD_VEC_100).word_vectors
     model = Model(2, 5620, 50, 100, 4, init_embedding=init_embedding)
-    print model.embedding.get_shape()
-    print model.W.get_shape()
-    print model.b.get_shape()
+    print(model.embedding.get_shape())
+    print(model.W.get_shape())
+    print(model.b.get_shape())
 
-    print model.lstm_fw_cell
-    print model.lstm_bw_cell
+    print(model.lstm_fw_cell)
+    print(model.lstm_bw_cell)
 
-    print model.unary_scores.get_shape()
+    print(model.unary_scores.get_shape())
 
-    print model.loss.get_shape()
+    print(model.loss.get_shape())
 
 
 if __name__ == "__main__":

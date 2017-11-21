@@ -19,13 +19,13 @@ class Data_index(object):
         words.append('<EOS>')
         words.insert(0, '<BOS>')
         words.insert(0, '<BOS>')
-        for i in xrange(2, len(words)-2):
-            for j in xrange(-2,3):
+        for i in range(2, len(words)-2):
+            for j in range(-2,3):
                 if words[i+j] in self.VOCABS.word2idx:
                     word_idx.append(self.VOCABS.word2idx[words[i+j]])
                 else:
                     word_idx.append(self.VOCABS.word2idx['<OOV>'])
-            for j in xrange(-2,2):
+            for j in range(-2,2):
                 if words[i+j]+words[i+j+1] in self.VOCABS.word2idx:
                     word_idx.append(self.VOCABS.word2idx[words[i+j]+words[i+j+1]])
                 else:
@@ -52,7 +52,7 @@ class Data_index(object):
         for words,tags in zip(data,label):
             length = len(words)
             ratio = (length-1)/MAX_LEN
-            for i in xrange(0, ratio+1):
+            for i in range(0, ratio+1):
                 tmpwords = words[MAX_LEN*i:MAX_LEN*(i+1)]
                 tmptags = tags[MAX_LEN*i:MAX_LEN*(i+1)]
                 if bigram:
@@ -100,7 +100,7 @@ class Data_index(object):
         f.close()
 
         for line in li:
-            line = unicode(line, 'utf-8')
+            line = str(line, 'utf-8')
             line_t = line.replace('\n', '').replace('\r', '').replace('  ', '#').split('#')
             if len(line_t) < 3:
                 if len(data_sentence) == 0:

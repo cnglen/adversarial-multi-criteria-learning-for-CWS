@@ -35,8 +35,8 @@ class BucketedDataIterator():
 
         res = self.dfs[i].ix[self.cursor[i]:self.cursor[i] + batch_size - 1]
 
-        words = map(lambda x: map(int, x.split(",")), res['words'].tolist())
-        tags = map(lambda x: map(int, x.split(",")), res['tags'].tolist())
+        words = [list(map(int, x.split(","))) for x in res['words'].tolist()]
+        tags = [list(map(int, x.split(","))) for x in res['tags'].tolist()]
 
         self.cursor[i] += batch_size
 
@@ -61,8 +61,8 @@ class BucketedDataIterator():
 
     def next_pred_one(self):
         res = self.df.ix[self.pos]
-        words = map(int, res['words'].split(','))
-        tags = map(int, res['tags'].split(','))
+        words = list(map(int, res['words'].split(',')))
+        tags = list(map(int, res['tags'].split(',')))
         length = res['length']
         self.pos += 1
         if self.pos == self.total:
@@ -71,8 +71,8 @@ class BucketedDataIterator():
 
     def next_all_batch(self, batch_size, bigram=True):
         res = self.df.ix[self.pos : self.pos + batch_size -1]
-        words = map(lambda x: map(int, x.split(",")), res['words'].tolist())
-        tags = map(lambda x: map(int, x.split(",")), res['tags'].tolist())
+        words = [list(map(int, x.split(","))) for x in res['words'].tolist()]
+        tags = [list(map(int, x.split(","))) for x in res['tags'].tolist()]
 
         self.pos += batch_size
         maxlen = max(res['length'])
@@ -91,7 +91,7 @@ class BucketedDataIterator():
         return x, y, res['length'].values
 
     def print_info(self):
-        print 'dfs shape: ', [len(self.dfs[i]) for i in xrange(len(self.dfs))]
-        print 'size: ', self.size
+        print('dfs shape: ', [len(self.dfs[i]) for i in range(len(self.dfs))])
+        print('size: ', self.size)
 
 

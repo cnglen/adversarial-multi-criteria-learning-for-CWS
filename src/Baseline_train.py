@@ -15,7 +15,7 @@ import logging
 from prepare_data_index import Data_index
 
 # ==================================================
-print 'Generate words and characters need to be trained'
+print('Generate words and characters need to be trained')
 VOCABS = Vocab(WORD_VEC_100, WORD_SINGLE, single_task=True, bi_gram=BI_GRAM, frequency=5)
 TAGS = Tag()
 init_embedding = VOCABS.word_vectors
@@ -57,8 +57,8 @@ if FLAGS.embed_status is False:
     init_embedding = None
 
 print("\nParameters:")
-for attr, value in sorted(FLAGS.__flags.items(),reverse=True):
-    print("{}={} \n".format(attr.upper(), value))
+for attr, value in sorted(list(FLAGS.__flags.items()),reverse=True):
+    print(("{}={} \n".format(attr.upper(), value)))
 print("")
 
 logger = logging.getLogger('record_base')
@@ -121,7 +121,7 @@ with tf.Graph().as_default():
         except:
             pass
         out_dir = os.path.abspath(os.path.join(os.path.curdir, "models", FLAGS.model_name))
-        print("Writing to {}\n".format(out_dir))
+        print(("Writing to {}\n".format(out_dir)))
 
         # Checkpoint directory. Tensorflow assumes this directory already exists so we need to create it
         checkpoint_dir = os.path.abspath(os.path.join(out_dir, "checkpoints"))
@@ -140,7 +140,7 @@ with tf.Graph().as_default():
                 x_batch, y_batch, seq_len_batch, FLAGS.dropout_keep_prob)
 
             time_str = datetime.datetime.now().isoformat()
-            print("{}: step {}, loss {:g}".format(time_str, step, loss))
+            print(("{}: step {}, loss {:g}".format(time_str, step, loss)))
 
             return step
 
@@ -149,10 +149,10 @@ with tf.Graph().as_default():
             yp_wordnum = y_pred.count(2)+y_pred.count(3)
             yt_wordnum = y.count(2)+y.count(3)
             start = 0
-            for i in xrange(len(y)):
+            for i in range(len(y)):
                 if y[i] == 2 or y[i] == 3:
                     flag = True
-                    for j in xrange(start, i+1):
+                    for j in range(start, i+1):
                         if y[j] != y_pred[j]:
                             flag = False
                     if flag == True:
@@ -162,9 +162,9 @@ with tf.Graph().as_default():
             P = cor_num / float(yp_wordnum)
             R = cor_num / float(yt_wordnum)
             F = 2 * P * R / (P + R)
-            print 'P: ', P
-            print 'R: ', R
-            print 'F: ', F
+            print('P: ', P)
+            print('R: ', R)
+            print('F: ', F)
             if test:
                 return P,R,F
             else:
@@ -174,9 +174,9 @@ with tf.Graph().as_default():
             N = df.shape[0]
             y_true, y_pred = model.fast_all_predict(sess, N, iterator, bigram=bigram)
             if test:
-                print 'Test:'
+                print('Test:')
             else:
-                print 'Dev'
+                print('Dev')
             return y_pred, y_true
 
         # train loop
@@ -198,10 +198,10 @@ with tf.Graph().as_default():
                     yp_test, yt_test = final_test_step(test_df, test_data_iterator, test=True, bigram=BI_GRAM)
                     p, r, f = evaluate_word_PRF(yp_test, yt_test, test=True)
                     path = saver.save(sess, checkpoint_prefix)
-                    print("Saved model checkpoint to {}\n".format(path))
+                    print(("Saved model checkpoint to {}\n".format(path)))
 
                 if current_step - best_step > 2000:
-                    print FLAGS.model_name, 'dropout:',FLAGS.dropout_keep_prob
+                    print(FLAGS.model_name, 'dropout:',FLAGS.dropout_keep_prob)
                     print("Dev acc is not getting better in 2000 steps, triggers normal early stop")
                     break
 
