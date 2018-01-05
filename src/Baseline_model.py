@@ -3,8 +3,8 @@ import tensorflow as tf
 
 from voc import Vocab
 from config import WORD_VEC_100
+import tensorflow as tf
 
-from tensorflow.contrib.rnn.python.ops import core_rnn_cell_impl
 
 class Model(object):
     def __init__(self, batch_size=100, vocab_size=5620,
@@ -66,11 +66,11 @@ class Model(object):
 
         with tf.variable_scope("lstm"):
             if self.lstm_net is False:
-                self.fw_cell = core_rnn_cell_impl.GRUCell(self.lstm_dim)
-                self.bw_cell = core_rnn_cell_impl.GRUCell(self.lstm_dim)
+                self.fw_cell = tf.contrib.rnn.GRUCell(self.lstm_dim)
+                self.bw_cell = tf.contrib.rnn.GRUCell(self.lstm_dim)
             else:
-                self.fw_cell = core_rnn_cell_impl.BasicLSTMCell(self.lstm_dim)
-                self.bw_cell = core_rnn_cell_impl.BasicLSTMCell(self.lstm_dim)
+                self.fw_cell = tf.contrib.rnn.BasicLSTMCell(self.lstm_dim)
+                self.bw_cell = tf.contrib.rnn.BasicLSTMCell(self.lstm_dim)
 
         with tf.variable_scope("forward"):
             seq_len = tf.cast(self.seq_len, tf.int64)
@@ -226,15 +226,16 @@ class Model(object):
 
         return y_true, y_pred
 
+
 def test():
-    init_embedding = Vocab(WORD_VEC_100).word_vectors
+    init_embedding = Vocab(WORD_VEC_100, train_word=2, bi_gram=False, single_task=False).word_vectors
     model = Model(2, 5620, 50, 100, 4, init_embedding=init_embedding)
     print(model.embedding.get_shape())
     print(model.W.get_shape())
     print(model.b.get_shape())
 
-    print(model.lstm_fw_cell)
-    print(model.lstm_bw_cell)
+    print(model.fw_cell)
+    print(model.bw_cell)
 
     print(model.unary_scores.get_shape())
 

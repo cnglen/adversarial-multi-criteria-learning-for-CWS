@@ -27,7 +27,7 @@ class Vocab(object):
                 table = []
                 for line in text:
                     com = str(line, 'utf-8').strip().split(' ')
-                    if len(com[1]) == 2 and int(com[2]) > self.frequency :
+                    if len(com[1]) == 2 and int(com[2]) > self.frequency:
                         table.append(com[1])
                 self.table = set(table)
             f.close()
@@ -42,7 +42,7 @@ class Vocab(object):
             self.word_vectors = []
             idx = 0
             for k in range(N):
-                line = str(f.readline(), 'utf-8').strip().split(" ")
+                line = str(f.readline()).strip().split(" ")
                 self.word2idx[line[0]] = idx
                 vector = np.asarray(list(map(float, line[1:])), dtype=np.float32)
                 self.word_vectors.append(vector)
@@ -69,6 +69,7 @@ class Vocab(object):
 
             self.word_vectors = np.asarray(self.word_vectors, dtype=np.float32)
 
+
 class Tag(object):
     def __init__(self):
         self.tag2idx = defaultdict(int)
@@ -80,6 +81,7 @@ class Tag(object):
         self.tag2idx['E'] = 2
         self.tag2idx['S'] = 3
 
+
 class OOV(object):
     def __init__(self, dictpath, goldpath, testpath, destpath, yp):
         self.path = dictpath
@@ -90,7 +92,6 @@ class OOV(object):
         self.word_dict()
         self.ans_segs = self.prod_ans()
         self.pred_segs = self.prod_pred(self.process_data(), yp)
-
 
     def word_dict(self):
         f = open(self.path, 'r')
@@ -123,7 +124,7 @@ class OOV(object):
         f.close()
 
         for line in li:
-            line = str(line, 'utf-8')
+            line = str(line)
             line_t = line.replace('\n', '').replace('\r', '').replace('  ', '#').split('#')
             if (len(line_t) < 3):
                 if (len(src_data_sentence) == 0):
@@ -173,21 +174,25 @@ class OOV(object):
             ans = []
             for word in ans_sentence:
                 ans.append(word)
-                for i in range(len(word) - 1): ans.append(-1)
+                for i in range(len(word) - 1):
+                    ans.append(-1)
             pred = []
             for word in pred_sentence:
                 pred.append(word)
-                for i in range(len(word) - 1): pred.append(-1)
+                for i in range(len(word) - 1):
+                    pred.append(-1)
             for ans_word, pred_word in zip(ans, pred):
-                if ans_word == -1: continue
+                if ans_word == -1:
+                    continue
                 if self.dict.get(ans_word) == None:
                     total += 1
-                    if pred_word == -1: continue
-                    if len(ans_word) != len(pred_word): continue
-                    if ans_word.find(pred_word) == -1: continue
+                    if pred_word == -1:
+                        continue
+                    if len(ans_word) != len(pred_word):
+                        continue
+                    if ans_word.find(pred_word) == -1:
+                        continue
                     right += 1
         oov_recall_rate = right * 1.0 / total
-        print(('total=', total, 'right=', right, 'oov_recall_rate=',oov_recall_rate))
+        print(('total=', total, 'right=', right, 'oov_recall_rate=', oov_recall_rate))
         return oov_recall_rate
-
-
